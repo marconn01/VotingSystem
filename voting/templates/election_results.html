@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ election_name }} - Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        table { width: 60%; margin: auto; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        th { background: #007bff; color: white; }
+        h3 { margin-top: 20px; }
+        .winner { background-color: #28a745; color: white; font-weight: bold; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Election Results: {{ election_name }}</h1>
+    <p>Status: <strong>{{ status }}</strong></p>
+
+    <a href="{% url 'export_results_pdf' election_id %}" class="btn">Export to PDF</a>
+
+    {% for position_name, position_data in position_results.items %}
+        <h3>{{ position_name }} (Allocated Seats: {{ position_data.allocated_seats }})</h3>
+        <table>
+            <tr>
+                <th>Candidate Name</th>
+                <th>Votes Received</th>
+            </tr>
+            {% for candidate_name, vote_count in position_data.candidates %}
+                <tr {% if forloop.counter <= position_data.allocated_seats %} class="winner" {% endif %}>
+                    <td>{{ candidate_name }}</td>
+                    <td>{{ vote_count }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+
+    <br>
+    <a href="{% url 'election_list' %}">Back to Elections</a>
+</body>
+</html>

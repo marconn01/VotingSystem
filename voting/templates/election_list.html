@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1 { color: #333; }
+        .category { margin: 20px 0; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #ddd; }
+        a { text-decoration: none; color: #007bff; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Election List</h1>
+
+    {% if scheduled %}
+        <div class="category">
+            <h2>📅 Scheduled Elections</h2>
+            <ul>
+                {% for election in scheduled %}
+                    <li>{{ election.1 }} (Upcoming)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if ongoing %}
+        <div class="category">
+            <h2>🗳️ Ongoing Elections</h2>
+            <ul>
+                {% for election in ongoing %}
+                    <li>{{ election.1 }} (In Progress)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if completed %}
+        <div class="category">
+            <h2>✅ Completed Elections</h2>
+            <ul>
+                {% for election in completed %}
+                    <li><a href="{% url 'election_results' election.0 %}">{{ election.1 }}</a> (View Results)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>
