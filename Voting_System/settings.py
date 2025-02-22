@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-tah1n_woj)t#8kx57&(^3$%u&6nhp7(238_vbo3ri)2o&a%@aw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["https://votingsystem-ubhs.onrender.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
 
+PORT = os.getenv("PORT", "8000")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
