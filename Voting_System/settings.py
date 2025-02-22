@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://votingsystem-ubhs.onrender.com/", "localhost"]
 
 
 # Application definition
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
+
+CSRF_TRUSTED_ORIGINS = ["https://votingsystem-ubhs.onrender.com"]
 
 
 MIDDLEWARE = [
