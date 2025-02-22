@@ -19,7 +19,7 @@ This project is a blockchain-based voting system designed to ensure secure, tran
 - **Database**: SQLite3
 
 ##Online
-```sh https://votingsystem-ubhs.onrender.com/ ```
+https://votingsystem-ubhs.onrender.com/
 
 ## Installation & Setup
 
