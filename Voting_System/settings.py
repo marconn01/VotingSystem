@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tah1n_woj)t#8kx57&(^3$%u&6nhp7(238_vbo3ri)2o&a%@aw'
+SECRET_KEY = "django-insecure-tah1n_woj)t#8kx57&(^3$%u&6nhp7(238_vbo3ri)2o&a%@aw"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'Voting_System.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
