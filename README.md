@@ -1,7 +1,7 @@
-#Voting System
+## Voting System
 
 ## *What We Do*
-This project is a blockchain-based voting system designed to ensure secure, transparent, and immutable election processes. It utilizes a central ledger (blockchain) integrated with a database management system (DBMS). The system is built using Django for the backend, React for the frontend, and SQLite3 as the database
+This project is a blockchain-based voting system designed to ensure secure, transparent, and immutable election processes. It utilizes a central ledger (blockchain)(votes are hashed) integrated with a database management system (DBMS). The system is built using Django for the backend, HTML, CSS for the frontend, and SQLite3 as the database
 
 
 ## Features
@@ -30,3 +30,7 @@ git clone https://github.com/marconn01/VotingSystem/
 cd VotingSystem
 pip install -r requirements.txt
 ```
+
+## Contributers
+- **[Navin Nepal](https://github.com/marconn01/)** 
+- **[Ashim Bhattarai](https://github.com/ashim27)** 
