@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
-
+import os
 PORT = os.getenv("PORT", "8000")
 
 MIDDLEWARE = [
