@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tah1n_woj)t#8kx57&(^3$%u&6nhp7(238_vbo3ri)2o&a%@aw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://votingsystem-ubhs.onrender.com"]
 
 
 # Application definition
@@ -55,11 +55,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Voting_System.urls'
-
+import os
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'voting/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
