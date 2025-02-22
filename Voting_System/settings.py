@@ -30,7 +30,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-
+PORT = os.getenv("PORT", "8000")
 # Application definition
 
 INSTALLED_APPS = [
