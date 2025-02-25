@@ -426,7 +426,7 @@ def demo_select_election(request):
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    cursor.execute("SELECT * FROM Elections WHERE status = 'Ongoing'")
+    cursor.execute("SELECT * FROM Elections WHERE status IN ('Ongoing', 'Scheduled')")
     elections = cursor.fetchall()
     conn.close()
 
