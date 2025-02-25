@@ -19,43 +19,7 @@ DB_PATH = "db.sqlite3"
 def get_db_connection():
     return sqlite3.connect(DB_PATH)
 
-def admin_login(request):
-    """Admin login without bcrypt"""
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT password FROM Admins WHERE username = ?", (username,))
-        result = cursor.fetchone()
-        conn.close()
-
-        if result and password == result[0]:  # Simple plaintext comparison
-            request.session["admin_logged_in"] = True
-            return redirect("admin_dashboard")
-        else:
-            return HttpResponse("Invalid credentials. Try again.")
-
-    return render(request, "admin_login.html")
-
-def admin_dashboard(request):
-    """Admin dashboard - only accessible if logged in"""
-    if not request.session.get("admin_logged_in"):
-        return redirect("admin_login")
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Elections")
-    elections = cursor.fetchall()
-    conn.close()
-
-    return render(request, "admin_dashboard.html", {"elections": elections})
-
-def admin_logout(request):
-    """Logout admin"""
-    request.session.flush()
-    return redirect("admin_login")
 
 def generate_otp():
     return str(random.randint(100000, 999999))  # 6-digit OTP
@@ -456,3 +420,69 @@ def home(request):
 
 def vote_success(request):
     return render(request, "vote_success.html")  # Create this HTML file
+
+def demo_select_election(request):
+    """Allow user to choose an election for demo voting"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM Elections WHERE status = 'Ongoing'")
+    elections = cursor.fetchall()
+    conn.close()
+
+    voter_details = {
+        "voter_name": request.session.get("voter_name"),
+        "voter_email": request.session.get("voter_email"),
+    }
+
+    return render(request, "demo_select_election.html", {"elections": elections, "voter_details": voter_details})
+
+def demo_select_candidates(request):
+    """Displays candidates based on the selected election for demo voting"""
+    election_id = request.GET.get("election_id")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Fetch positions and their seat limits for the selected election
+    cursor.execute("""
+        SELECT Positions.position_id, Positions.position_name, Positions.allocated_seats
+        FROM Positions
+        JOIN Candidates ON Positions.position_id = Candidates.position_id
+        WHERE Candidates.election_id = ?
+        GROUP BY Positions.position_id
+    """, (election_id,))
+    
+    positions = cursor.fetchall()
+
+    # Fetch candidates for this election
+    cursor.execute("""
+        SELECT Candidates.candidate_id, Candidates.name, Positions.position_id, Positions.position_name, PoliticalParties.party_name
+        FROM Candidates
+        JOIN Positions ON Candidates.position_id = Positions.position_id
+        JOIN PoliticalParties ON Candidates.party_id = PoliticalParties.party_id
+        WHERE Candidates.election_id = ?
+    """, (election_id,))
+    
+    candidates = cursor.fetchall()
+    conn.close()
+
+    voter_details = {
+        "voter_name": request.session.get("voter_name"),
+        "voter_email": request.session.get("voter_email"),
+    }
+
+    return render(request, "demo_select_candidates.html", {
+        "positions": positions,
+        "candidates": candidates,
+        "election_id": election_id,
+        "voter_details": voter_details
+    })
+
+def demo_submit_vote(request):
+    """Handles demo vote submission without recording the vote"""
+    if request.method == "POST":
+        selected_candidates = request.POST.getlist("candidate")
+        return render(request, "demo_vote_success.html", {"selected_candidates": selected_candidates})
+
+    return redirect("demo_select_election")
