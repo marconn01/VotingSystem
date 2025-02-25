@@ -2,9 +2,6 @@ from django.urls import path
 from . import views  # Import the views module
 
 urlpatterns = [
-    path("admin-login/", views.admin_login, name="admin_login"),  # Use views.admin_login
-    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
-    path("admin-logout/", views.admin_logout, name="admin_logout"),
     path("voter-login/", views.voter_login, name="voter_login"),
     path("select-election/", views.select_election, name="select_election"),
     path("store-election/", views.store_election, name="store_election"),
@@ -18,5 +15,8 @@ urlpatterns = [
     path("voter-logout/", views.voter_logout, name="voter_logout"),
     path("verify-otp/", views.verify_otp, name="verify_otp"),
     path("election/<int:election_id>/export_pdf/", views.export_results_pdf, name="export_results_pdf"),
-
+     path('demo_select_election/', views.demo_select_election, name='demo_select_election'),
+    path('demo_select_candidates/', views.demo_select_candidates, name='demo_select_candidates'),
+    path('demo_submit_vote/', views.demo_submit_vote, name='demo_submit_vote'),
 ]
+
