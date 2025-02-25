@@ -246,6 +246,13 @@ def submit_vote(request):
         conn = sqlite3.connect("db.sqlite3")
         cursor = conn.cursor()
 
+        # Check if the election is still ongoing
+        cursor.execute("SELECT status FROM Elections WHERE election_id = ?", (election_id,))
+        election_status = cursor.fetchone()[0]
+        if election_status != 'Ongoing':
+            conn.close()
+            return render(request, "election_ended.html")
+
         # Check if the voter has already voted in this specific election
         cursor.execute(
             "SELECT COUNT(*) FROM Votes WHERE voter_id = ? AND election_id = ?",
@@ -279,7 +286,6 @@ def submit_vote(request):
         return redirect("vote_success")
 
     return redirect("select_candidates")
-
 
 def already_voted_page(request):
     update_election_status()
