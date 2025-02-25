@@ -12,6 +12,8 @@ import random
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import pytz
+from django.utils import timezone
 
 DB_PATH = "db.sqlite3"
 
@@ -19,7 +21,31 @@ DB_PATH = "db.sqlite3"
 def get_db_connection():
     return sqlite3.connect(DB_PATH)
 
+def update_election_status():
+    """Update the status of elections based on the current time"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
+    # Set the timezone to GMT+5:45
+    nepal_tz = pytz.timezone('Asia/Kathmandu')
+    current_time = timezone.now().astimezone(nepal_tz)
+
+    # Start elections that are scheduled to start
+    cursor.execute("""
+        UPDATE Elections
+        SET status = 'Ongoing'
+        WHERE status = 'Scheduled' AND start_time <= ?
+    """, (current_time,))
+    
+    # End elections that are scheduled to end
+    cursor.execute("""
+        UPDATE Elections
+        SET status = 'Completed'
+        WHERE status = 'Ongoing' AND end_time <= ?
+    """, (current_time,))
+
+    conn.commit()
+    conn.close()
 
 def generate_otp():
     return str(random.randint(100000, 999999))  # 6-digit OTP
@@ -48,6 +74,7 @@ def send_otp(email, otp):
 
 # Step 1: Generate and send OTP
 def voter_login(request):
+    update_election_status()
     if request.method == "POST":
         email = request.POST["email"]
         
@@ -73,6 +100,7 @@ def voter_login(request):
 
 # Step 2: Verify OTP
 def verify_otp(request):
+    update_election_status()
     if request.method == "POST":
         entered_otp = request.POST["otp"]
         stored_otp = request.session.get("otp")
@@ -98,11 +126,13 @@ def verify_otp(request):
     return render(request, "verify_otp.html")
 
 def voter_logout(request):
+    update_election_status()
     """Logout admin"""
     request.session.flush()
     return redirect("voter_login")
 
 def select_election(request):
+    update_election_status()
     """Allow voter to choose an election"""
     if "voter_id" not in request.session:
         return redirect("voter_login")  # Ensure voter is logged in
@@ -125,6 +155,7 @@ def select_election(request):
     })
 
 def store_election(request):
+    update_election_status()
     """Stores selected election in session and redirects to candidate selection"""
     if request.method == "POST":
         election_id = request.POST.get("election_id")
@@ -134,6 +165,7 @@ def store_election(request):
     return redirect("select_election")
 
 def select_candidates(request):
+    update_election_status()
     """Displays candidates based on the selected election and enforces selection limits"""
     if "voter_id" not in request.session:
         return redirect("voter_login")
@@ -201,6 +233,7 @@ def get_previous_vote_hash(cursor, election_id):
     return last_vote[0] if last_vote else ""
 
 def submit_vote(request):
+    update_election_status()
     """Handles vote submission with blockchain hashing"""
     if request.method == "POST":
         voter_id = request.session.get("voter_id")
@@ -249,10 +282,12 @@ def submit_vote(request):
 
 
 def already_voted_page(request):
+    update_election_status()
     """Show a message that the voter has already voted."""
     return render(request, "already_voted.html", {"message": "You have already voted!"})
 
 def election_list(request):
+    update_election_status()
     """Show list of Scheduled, Ongoing, and Completed Elections"""
     conn = sqlite3.connect("db.sqlite3")
     cursor = conn.cursor()
@@ -274,6 +309,7 @@ def election_list(request):
     })
 
 def election_results(request, election_id):
+    update_election_status()
     """Show results of a specific election with allocated seats and winners highlighted."""
     election_id = int(election_id)  # Ensure it's an integer
 
@@ -321,6 +357,7 @@ def election_results(request, election_id):
     })
 
 def export_results_pdf(request, election_id):
+    update_election_status()
     """Generate a PDF of election results."""
     election_id = int(election_id)
 
@@ -415,13 +452,16 @@ def export_results_pdf(request, election_id):
 
 
 def home(request):
+    update_election_status()
     """Render the homepage with login options and election results link."""
     return render(request, "home.html")
 
 def vote_success(request):
+    update_election_status()
     return render(request, "vote_success.html")  # Create this HTML file
 
 def demo_select_election(request):
+    update_election_status()
     """Allow user to choose an election for demo voting"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -438,6 +478,7 @@ def demo_select_election(request):
     return render(request, "demo_select_election.html", {"elections": elections, "voter_details": voter_details})
 
 def demo_select_candidates(request):
+    update_election_status()
     """Displays candidates based on the selected election for demo voting"""
     election_id = request.GET.get("election_id")
 
@@ -480,6 +521,7 @@ def demo_select_candidates(request):
     })
 
 def demo_submit_vote(request):
+    update_election_status()
     """Handles demo vote submission without recording the vote"""
     if request.method == "POST":
         selected_candidates = request.POST.getlist("candidate")
