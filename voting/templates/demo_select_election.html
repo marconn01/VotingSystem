@@ -238,15 +238,15 @@
     </div>
 
     <div class="welcome-section">
-        <h1>Welcome, {{ voter_details.voter_name }}</h1>
-        <p class="voter-email">Email: {{ voter_details.voter_email }}</p>
+        <h1>Welcome To Demo-Voting</h1>
+        <p class="voter-email">Your vote will not be recorded</p>
     </div>
     
     <hr>
 
     <h2>Choose an Election</h2>
     <div class="container">
-        <form method="POST" action="{% url 'store_election' %}">
+        <form method="GET" action="{% url 'demo_select_candidates' %}">
             {% csrf_token %}
             <label for="election">Select Election:</label>
             <select name="election_id" id="election" required>
@@ -256,7 +256,7 @@
             </select>
             <button type="submit">Next</button>
         </form>
-        <a href="{% url 'voter_logout' %}">Logout</a>
+        <a href="{% url 'home' %}">Back to Home</a>
     </div>
 </body>
 </html>

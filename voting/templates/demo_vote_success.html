@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Candidates - TCIOE Voting System</title>
+    <title>Vote Submitted - TCIOE Voting System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -264,124 +264,53 @@
             }
         }
     </style>
-   <script>
-    function enforceSelectionLimits() {
-        let positionLimits = {};
-        let checkboxes = document.querySelectorAll("input[type='checkbox']");
+    <script>
+        function enforceSelectionLimits() {
+            let positionLimits = {};
+            let checkboxes = document.querySelectorAll("input[type='checkbox']");
 
-        checkboxes.forEach((checkbox) => {
-            let positionId = checkbox.dataset.positionId;
-            let maxSelections = parseInt(checkbox.dataset.maxSeats);
+            checkboxes.forEach((checkbox) => {
+                let positionId = checkbox.dataset.positionId;
+                let maxSelections = parseInt(checkbox.dataset.maxSeats);
 
-            if (!(positionId in positionLimits)) {
-                positionLimits[positionId] = {
-                    max: maxSelections,
-                    selected: 0
-                };
-            }
-
-            checkbox.addEventListener("change", function() {
-                let checkedBoxes = document.querySelectorAll(`input[data-position-id='${positionId}']:checked`);
-                positionLimits[positionId].selected = checkedBoxes.length;
-
-                if (positionLimits[positionId].selected > positionLimits[positionId].max) {
-                    alert(`You can only select ${positionLimits[positionId].max} candidate(s) for this position.`);
-                    this.checked = false;
+                if (!(positionId in positionLimits)) {
+                    positionLimits[positionId] = {
+                        max: maxSelections,
+                        selected: 0
+                    };
                 }
 
-                updateRemainingSelections(positionId, maxSelections, checkedBoxes.length);
+                checkbox.addEventListener("change", function() {
+                    let checkedBoxes = document.querySelectorAll(`input[data-position-id='${positionId}']:checked`);
+                    positionLimits[positionId].selected = checkedBoxes.length;
+
+                    if (positionLimits[positionId].selected > positionLimits[positionId].max) {
+                        alert(`You can only select ${positionLimits[positionId].max} candidate(s) for this position.`);
+                        this.checked = false;
+                    }
+
+                    // Update the UI to show remaining selections
+                    updateRemainingSelections(positionId, maxSelections, checkedBoxes.length);
+                });
             });
-        });
-    }
-
-    function updateRemainingSelections(positionId, max, selected) {
-        const remainingElement = document.querySelector(`#remaining-${positionId}`);
-        if (remainingElement) {
-            const remaining = max - selected;
-            remainingElement.textContent = `${selected}/${max} selected`;
         }
-    }
 
-    function confirmVoteSubmission(event) {
-        event.preventDefault();
-        let selectedCandidates = document.querySelectorAll("input[name='candidate']:checked").length;
-
-        let confirmationMessage = selectedCandidates > 0 
-            ? `You have selected ${selectedCandidates} candidate(s). Are you sure you want to submit your vote?` 
-            : "You haven't selected any candidate. Your vote will be counted as a blank vote. Proceed?";
-
-        if (confirm(confirmationMessage)) {
-            event.target.submit();
+        function updateRemainingSelections(positionId, max, selected) {
+            const remainingElement = document.querySelector(`#remaining-${positionId}`);
+            if (remainingElement) {
+                const remaining = max - selected;
+                remainingElement.textContent = `${selected}/${max} selected`;
+            }
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        enforceSelectionLimits();
-
-        // Attach confirmation to the form submission
-        let voteForm = document.querySelector("form");
-        if (voteForm) {
-            voteForm.addEventListener("submit", confirmVoteSubmission);
-        }
-    });
-</script>
+        document.addEventListener("DOMContentLoaded", enforceSelectionLimits);
+    </script>
 </head>
 <body>
-    <div class="header">
-        <div class="logo-section">
-            <div class="logo">
-                <img src="https://tcioe.edu.np/_next/static/media/logo.e88d9bff.svg" alt="TCIOE Logo">
-            </div>
-            <div class="institution-info">
-                <h3>Tribhuvan University</h3>
-                <p>Institute of Engineering</p>
-                <p>Thapathali Campus</p>
-                <p class="election-title">FSU Election 2081</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="welcome-section">
-        <h1>Welcome, {{ voter_details.voter_name }}</h1>
-        <p class="voter-email">Email: {{ voter_details.voter_email }}</p>
-    </div>
-    
-    <hr>
-
-    <h2>Select Candidates</h2>
     <div class="container">
-        <form method="POST" action="{% url 'submit_vote' %}">
-            {% csrf_token %}
-            
-            {% for position in positions %}
-                <div class="position-group">
-                    <div class="position-header">
-                        <h3>{{ position.1 }}</h3>
-                        <span class="max-seats">
-                            <span id="remaining-{{ position.0 }}">0/{{ position.2 }} selected</span>
-                        </span>
-                    </div>
-                    {% for candidate in candidates %}
-                        {% if candidate.2 == position.0 %}
-                            <div class="candidate-option">
-                                <label>
-                                    <input type="checkbox" name="candidate" value="{{ candidate.0 }}"
-                                           data-position-id="{{ position.0 }}" data-max-seats="{{ position.2 }}">
-                                    {{ candidate.1 }}
-                                </label>
-                                <div class="candidate-info">{{ candidate.4 }}</div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-
-            <button type="submit">Submit Vote</button>
-        </form>
-        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <a href="{% url 'select_election' %}">Back to elections</a>
-            <a href="{% url 'voter_logout' %}">Logout</a>
-        </div>
+        <h1>Demo Vote Successful!</h1>
+        <p>Your vote will not be recorded.</p>
+        <a href="{% url 'home' %}" class="btn">Return to Home Page</a>
     </div>
 </body>
 </html>

@@ -342,15 +342,15 @@
     </div>
 
     <div class="welcome-section">
-        <h1>Welcome, {{ voter_details.voter_name }}</h1>
-        <p class="voter-email">Email: {{ voter_details.voter_email }}</p>
+        <h1>Welcome To Demo-Voting</h1>
+        <p class="voter-email">Your vote will not be recorded</p>
     </div>
     
     <hr>
 
     <h2>Select Candidates</h2>
     <div class="container">
-        <form method="POST" action="{% url 'submit_vote' %}">
+        <form method="POST" action="{% url 'demo_submit_vote' %}">
             {% csrf_token %}
             
             {% for position in positions %}
@@ -379,9 +379,8 @@
             <button type="submit">Submit Vote</button>
         </form>
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <a href="{% url 'select_election' %}">Back to elections</a>
-            <a href="{% url 'voter_logout' %}">Logout</a>
-        </div>
+        <a href="{% url 'demo_select_election' %}">Back to elections</a>
+        <a href="{% url 'home' %}">Back to Home</a>
     </div>
 </body>
 </html>
